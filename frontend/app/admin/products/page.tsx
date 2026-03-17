@@ -58,7 +58,7 @@ export default function AdminProductsPage() {
         category: formData.category
       };
 
-      const newProduct = await createProduct(payload, token, imageFiles);
+      const newProduct = await createProduct(payload, token);
       setProducts((prev) => [newProduct, ...prev]);
       setFormData({ name: "", price: "", description: "", brand: "", stock: "", category: "" });
       setImageFiles(null);

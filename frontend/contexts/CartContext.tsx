@@ -66,7 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const updateQuantity = async (itemId: string, quantity: number) => {
     try {
-      await updateCartQuantity(itemId, quantity);
+      await updateCartItem(itemId, quantity);
       await loadCart(); // Reload cart to get updated data
     } catch (error) {
       console.error("Failed to update cart quantity:", error);
