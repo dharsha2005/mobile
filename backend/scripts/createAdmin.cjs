@@ -18,18 +18,28 @@ const User = mongoose.model("User", userSchema);
 
 async function createAdmin() {
   try {
-    await mongoose.connect('mongodb+srv://deepakk:deepakk@cluster0.pkvsd96.mongodb.net/gadgetra');
+    // Use the same DB as the backend
+    const dbUri = process.env.MONGODB_URI || 'mongodb+srv://onlytamilan6_db_user:08-Aug-05@cluster0.irjjr71.mongodb.net/gadgetra?retryWrites=true&w=majority&appName=Cluster0';
+    await mongoose.connect(dbUri);
     console.log('Connected to MongoDB');
+    
+    // Create hashed password
+    const hashedPassword = await bcrypt.hash('admin123', 12);
     
     // Check if admin already exists
     const existingAdmin = await User.findOne({ email: 'admin@gadgetra.com' });
     if (existingAdmin) {
-      console.log('Admin user already exists: admin@gadgetra.com / admin123');
+      console.log('Admin user exists, updating password...');
+      existingAdmin.password = hashedPassword;
+      await existingAdmin.save();
+      console.log('✅ Admin user password updated!');
+      console.log('📧 Email: admin@gadgetra.com');
+      console.log('🔑 Password: admin123');
+      console.log('🎯 Role: admin');
       process.exit(0);
     }
     
     // Create admin user
-    const hashedPassword = await bcrypt.hash('admin123', 12);
     const admin = new User({
       name: 'Admin User',
       email: 'admin@gadgetra.com',

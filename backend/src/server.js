@@ -28,38 +28,38 @@ configurePassport();
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://mobile-frontend-tau.vercel.app";
 const allowedOrigins = [FRONTEND_URL, "http://localhost:3000", "http://localhost:3001", "https://gadgetra-frontend.onrender.com", "https://mobile-frontend-tau.vercel.app"];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      const allowedOrigins = [
-        "https://mobile-frontend-tau.vercel.app", 
-        "https://neoformative-glenda-myologic.ngrok-free.dev",
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002"
-      ];
-      
-      if (allowedOrigins.includes(origin) || 
-          origin.match(/localhost:\d+$/) || 
-          origin.match(/\.loca\.lt$/) || 
-          origin.match(/\.ngrok-free\.app$/) ||
-          origin.match(/\.ngrok\.io$/) ||
-          origin.match(/\.vercel\.app$/)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-  })
-);
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin) || 
+      origin?.match(/localhost:\d+$/) || 
+      origin?.match(/\.loca\.lt$/) || 
+      origin?.match(/\.ngrok-free\.app$/) ||
+      origin?.match(/\.ngrok\.io$/) ||
+      origin?.match(/\.vercel\.app$/) ||
+      origin?.match(/\.onrender\.com$/)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  next();
+});
+
+// Also use the cors package for additional support
+app.use(cors({
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+}));
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));

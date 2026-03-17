@@ -1,0 +1,67 @@
+services:
+  # Node.js Backend Service
+  - type: web
+    name: gadgetra-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - fromGroup: mongodb
+      - fromGroup: cloudinary
+      - fromGroup: jwt-secret
+      - fromGroup: session-secret
+      - fromGroup: email-config
+      - fromGroup: payment-config
+
+databases:
+  # MongoDB Database
+  - name: gadgetra-mongodb
+    databaseName: gadgetra
+
+# Environment Variable Groups
+envVarGroups:
+  - name: mongodb
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+  - name: cloudinary
+    envVars:
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+  - name: jwt-secret
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+  - name: session-secret
+    envVars:
+      - key: SESSION_SECRET
+        sync: false
+  - name: email-config
+    envVars:
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+  - name: payment-config
+    envVars:
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
